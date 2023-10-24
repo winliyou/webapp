@@ -1,8 +1,13 @@
+use std::fmt::format;
+
+use rand::Rng;
 use wasm_bindgen::{JsCast, JsValue};
 use yew::prelude::*;
+
 struct App {
     current_random_number: u32,
     guessed_number: u32,
+    first_boot: bool,
 }
 
 enum MyMessage {
@@ -12,25 +17,29 @@ enum MyMessage {
 
 impl yew::Component for App {
     type Message = MyMessage;
-
     type Properties = ();
+
     fn create(ctx: &yew::Context<Self>) -> Self {
-        let rand_number: u32 = rand::random::<u32>() % 1000;
+        let rand_number: u32 = rand::thread_rng().gen_range(0..1000);
         web_sys::console::log_1(&JsValue::from(format!("random: {}", rand_number)));
         App {
             current_random_number: rand_number,
             guessed_number: 0,
+            first_boot: true,
         }
     }
+
     fn view(&self, ctx: &yew::Context<Self>) -> yew::Html {
         yew::html! {
+        <div>
             <div>
                 <input
+                    id="gussing_number"
                     type="number"
                     placeholder={"请输入0-1000中间的一个数"}
-                    oninput={
+                    onchange={
                         ctx.link().callback(
-                            |e: InputEvent| {
+                            |e: Event| {
                                 if let Some(target) = e.target()
                                 {
                                     if let Ok(input_element) = target.dyn_into::<web_sys::HtmlInputElement>()
@@ -56,8 +65,11 @@ impl yew::Component for App {
                     {"确定"}
                     </button>
             </div>
+            {self.render_result()}
+        </div>
         }
     }
+
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             MyMessage::MsgGuessTry => match self.guessed_number {
@@ -87,12 +99,36 @@ impl yew::Component for App {
                 }
             },
             MyMessage::MsgGuessUpdate(x) => {
+                web_sys::console::log_1(&JsValue::from(format!("guess number: {}", x)));
                 self.guessed_number = x;
+                self.first_boot = false;
             }
         }
         true
     }
 }
+
+impl App {
+    fn render_result(&self) -> yew::Html {
+        yew::html!(
+            if self.first_boot
+            {
+                <div>{"输入数字开始游戏吧~"}</div>
+            }
+            else
+            {
+                if self.guessed_number < self.current_random_number {
+                    <div>{"小了"}</div>
+                } else if self.guessed_number > self.current_random_number {
+                    <div>{"大了"}</div>
+                } else {
+                    <div>{"对了"}</div>
+                }
+            }
+        )
+    }
+}
+
 fn main() {
     yew::Renderer::<App>::with_root(
         web_sys::window()
