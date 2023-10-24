@@ -31,7 +31,7 @@ jobs:
       - name: install rust
         uses: brndnmtthws/rust-action-rustup@v1.0.0
         with:
-          targets: x86_64-unknown-linux-gnu,wasm32-unknown-unknown
+          targets: x86_64-unknown-linux-gnu wasm32-unknown-unknown
       - name: install trunk
         run: cargo install trunk
       - name: build pages
