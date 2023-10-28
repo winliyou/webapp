@@ -1,0 +1,51 @@
+.guess_result {
+    font-size: large;
+}
+
+
+.result_less {
+    color: rgb(215, 9, 201);
+}
+
+.result_great {
+    color: rgb(29, 12, 113);
+}
+
+.result_equal {
+    color: red;
+}
+
+
+.guess_input {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "first second"
+        "first third";
+    /* 确保容器占满整个视口高度 */
+    height: 100vh;
+    margin: 0;
+}
+
+.guess_input> :nth-child(1) {
+    grid-area: first;
+    font-size: 10dvh;
+    /* 第一个子节点的高度是其他两个节点的总和 */
+}
+
+.guess_input> :nth-child(2) {
+    grid-area: second;
+    font-size: 10dvh;
+    /* 第二个子节点位于第一行 */
+    /* max-width: 100px; */
+    /* 其他两个节点的宽度最大为100px */
+}
+
+.guess_input> :nth-child(3) {
+    grid-area: third;
+    font-size: 5dvh;
+    /* 第三个子节点位于第二行 */
+    /* max-width: 100px; */
+    /* 其他两个节点的宽度最大为100px */
+}

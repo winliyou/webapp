@@ -31,41 +31,39 @@ impl yew::Component for App {
 
     fn view(&self, ctx: &yew::Context<Self>) -> yew::Html {
         yew::html! {
-        <div>
-            <div>
-                <input
-                    id="gussing_number"
-                    type="number"
-                    placeholder={"请输入0-1000中间的一个数"}
-                    onchange={
-                        ctx.link().callback(
-                            |e: Event| {
-                                if let Some(target) = e.target()
+        <div class="guess_input">
+            <input
+                id="gussing_number"
+                type="text"
+                placeholder={"请输入0-1000中间的一个数"}
+                onchange={
+                    ctx.link().callback(
+                        |e: Event| {
+                            if let Some(target) = e.target()
+                            {
+                                if let Ok(input_element) = target.dyn_into::<web_sys::HtmlInputElement>()
                                 {
-                                    if let Ok(input_element) = target.dyn_into::<web_sys::HtmlInputElement>()
+                                    if let Ok(num) = input_element.value().parse::<u32>()
                                     {
-                                        if let Ok(num) = input_element.value().parse::<u32>()
-                                        {
-                                            return MyMessage::MsgGuessUpdate(num);
-                                        }
+                                        return MyMessage::MsgGuessUpdate(num);
                                     }
                                 }
-                                MyMessage::MsgGuessUpdate(0)
                             }
-                        )}
-                    />
-                <button name="guess"
-                    onclick={
-                        ctx.link().callback(
-                            |_|{
-                                web_sys::console::log_1(&JsValue::from("clicked")); MyMessage::MsgGuessTry
-                            }
-                        )}
-                    >
-                    {"确定"}
-                    </button>
-            </div>
-            {self.render_result()}
+                            MyMessage::MsgGuessUpdate(0)
+                        }
+                    )}
+                />
+            <button name="guess"
+                onclick={
+                    ctx.link().callback(
+                        |_|{
+                            web_sys::console::log_1(&JsValue::from("clicked")); MyMessage::MsgGuessTry
+                        }
+                    )}
+                >
+                {"确定"}
+                </button>
+        {self.render_result()}
         </div>
         }
     }
@@ -118,11 +116,11 @@ impl App {
             else
             {
                 if self.guessed_number < self.current_random_number {
-                    <div>{"小了"}</div>
+                    <div><h1 class="guess_result result_less">{"小了"}</h1></div>
                 } else if self.guessed_number > self.current_random_number {
-                    <div>{"大了"}</div>
+                    <div><h1 class="guess_result result_great">{"大了"}</h1></div>
                 } else {
-                    <div>{"对了"}</div>
+                    <div><h1 class="guess_result result_equal">{"对了"}</h1></div>
                 }
             }
         )
