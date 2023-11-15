@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use rand::Rng;
 use wasm_bindgen::{JsCast, JsValue};
 use yew::prelude::*;

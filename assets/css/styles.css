@@ -24,28 +24,23 @@
         "first second"
         "first third";
     /* 确保容器占满整个视口高度 */
-    height: 100vh;
+    height: 30vh;
+    width: 100vw;
     margin: 0;
 }
 
 .guess_input> :nth-child(1) {
     grid-area: first;
-    font-size: 10dvh;
+    font-size: 3vh;
     /* 第一个子节点的高度是其他两个节点的总和 */
 }
 
 .guess_input> :nth-child(2) {
-    grid-area: second;
-    font-size: 10dvh;
     /* 第二个子节点位于第一行 */
-    /* max-width: 100px; */
-    /* 其他两个节点的宽度最大为100px */
+    grid-area: second;
 }
 
 .guess_input> :nth-child(3) {
-    grid-area: third;
-    font-size: 5dvh;
     /* 第三个子节点位于第二行 */
-    /* max-width: 100px; */
-    /* 其他两个节点的宽度最大为100px */
+    grid-area: third;
 }
