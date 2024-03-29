@@ -1,0 +1,103 @@
+$borderRadius: 10px;
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    z-index: -50;
+    margin: 0;
+    padding: 0;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+            url("../image/particle.png") 0 0 repeat,
+            linear-gradient(to bottom, rgba(82, 49, 253, 0), rgba(82, 49, 253, 1)),
+            linear-gradient(to left, rgba(82, 49, 253, 0), rgba(82, 49, 253, 1)),
+
+            repeating-radial-gradient(closest-side, rgb(82, 49, 253), rgb(250, 100, 145) 10%, transparent 360%),
+            repeating-radial-gradient(circle, rgba(255, 255, 255, 0.3) 3%, transparent 15%),
+            linear-gradient(to top,
+                rgba(0, 0, 0, 0.2) 2%,
+                transparent 3%);
+        animation: moveBackground 40s linear infinite;
+        background-position: top center;
+        background-clip: content-box;
+        backdrop-filter: blur(5px);
+        opacity: 0.9;
+        z-index: -100;
+    }
+}
+
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0 0;
+    }
+
+    25% {
+        background-position: 50% 0;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    75% {
+        background-position: 50% 100%;
+    }
+
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+.border_noround {
+    border-radius: 0;
+}
+
+.border_round {
+    @extend .border_noround;
+    border-radius: $borderRadius;
+}
+
+
+.border_round_left_top {
+    @extend .border_noround;
+    border-top-left-radius: $borderRadius;
+}
+
+.border_round_left_bottom {
+    @extend .border_noround;
+    border-bottom-left-radius: $borderRadius;
+}
+
+.border_round_right_top {
+    @extend .border_noround;
+    border-top-right-radius: $borderRadius;
+}
+
+.border_round_right_bottom {
+    @extend .border_noround;
+    border-bottom-right-radius: $borderRadius;
+}
+
+.white_background {
+    background-color: white;
+}
+
+.music_background {
+    background-color: #303030
+}
+
+.music_color {
+    color: white
+}

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import logo from './assets/logo.ico'
+import logo from '@/image/logo.ico'
 import Link from "next/link";
-import { Card, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Chaoset",
@@ -14,13 +14,13 @@ export default function Home() {
   return (
     <main>
       <Grid container columns={2} spacing={2}>
-        <Grid item xs={12} sm={6} md={3} lg={3} margin={"10px 5px 5px 10px"}>
+        <Grid item xs={12} sm={6} md={3} lg={3}>
           <Link href={"/musiczone"}>Music Zone</Link>
         </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} margin={"10px 5px 5px 10px"}>
+        <Grid item xs={12} sm={6} md={3} lg={3}>
           <Link href={"/guessit"}> Guess It</Link>
         </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3} margin={"10px 5px 5px 10px"}>
+        <Grid item xs={12} sm={6} md={3} lg={3}>
           Hello world
         </Grid>
       </Grid>

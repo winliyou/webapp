@@ -1,6 +1,6 @@
 "use client";
 
-import { FeaturedPlayList, PlayArrowRounded } from "@mui/icons-material";
+import { FeaturedPlayList, PauseTwoTone, PlayArrowRounded } from "@mui/icons-material";
 import Button from "@mui/material/Button/Button";
 import Divider from "@mui/material/Divider/Divider";
 import Grid from "@mui/material/Grid/Grid";
@@ -20,14 +20,14 @@ interface GetPlayListRespContent {
   title: string;
   source: string;
 }
-type GetPlayListResp = Array<GetPlayListRespContent>;
 
 export default function MusicPlayer() {
   const [playListVisible, setPlayListVisible] = useState<boolean>(false);
-  const [playListContent, setPlayListContent] = useState<GetPlayListResp>([]);
-  const [playingSongTitle, setPlayingSongTitle] = useState<string>("");
+  const [playListContent, setPlayListContent] = useState<GetPlayListRespContent[]>([]);
+  const [playingSongTitle, setPlayingSongTitle] = useState<string>("如愿");
   const [playingSongSrc, setPlayingSongSrc] = useState<string>("");
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [totalDuration, setTotalDuration] = useState<number>(1);
   const audioRef = createRef<HTMLAudioElement>();
@@ -53,8 +53,12 @@ export default function MusicPlayer() {
     }
   };
 
+  const handleLoadedData = () => {
+    setDataLoaded(true);
+  }
+
   const handleSeek = (
-    event: Event,
+    _event: Event,
     newValue: number | number[],
     activeThumb: number,
   ) => {
@@ -74,17 +78,26 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     (async () => {
-      fetch("http://192.168.1.118:12345/music/get_list", {
+      fetch("https://chaoset.com/api/get_list", {
         method: "POST",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": " application/json"
         },
         body: JSON.stringify({ author: "*", count: 10 } as GetPlayListReq),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
         .then((data) => {
-          setPlayListContent(data);
+          if (data) {
+            setPlayListContent(JSON.parse(data)["music_list"]);
+          } else {
+            console.log('No data returned from fetch');
+          }
         })
         .catch((error) =>
           console.error("There was a problem with the fetch operation:", error),
@@ -105,6 +118,8 @@ export default function MusicPlayer() {
         }
         onTimeUpdate={handleTimeUpdate}
         onDurationChange={handleDurationChange}
+        onLoadedMetadata={handleLoadedData}
+        onLoadedData={handleLoadedData}
       />
       <Grid
         container
@@ -114,17 +129,17 @@ export default function MusicPlayer() {
       >
         {/* progress bar */}
         <Grid container direction={"row"}>
-          <Grid item sx={{ minWidth: "80%" }}>
+          <Grid item sx={{ minWidth: "80%", marginLeft: "20px" }}>
             <Slider
               max={1000}
               value={(1000 * currentTime) / totalDuration}
               onChange={handleSeek}
             />
           </Grid>
-          <Grid item>{playingSongTitle}</Grid>
+          <Grid item sx={{ marginLeft: "20px" }}>{dataLoaded && playingSongTitle || "Loading...."}</Grid>
         </Grid>
 
-        {/* 播放按钮 */}
+        {/* 功能按钮*/}
         <Grid container direction={"row"}>
           <Grid item>
             {/* play button */}
@@ -132,10 +147,8 @@ export default function MusicPlayer() {
               onClick={() => {
                 togglePlay();
               }}
-              startIcon={<PlayArrowRounded />}
-            >
-              Play Arrow
-            </Button>
+              startIcon={(isPlaying && <PauseTwoTone /> || <PlayArrowRounded />)}
+            />
           </Grid>
 
           {/* 显示播放列表的开关 */}
@@ -146,42 +159,43 @@ export default function MusicPlayer() {
                 setPlayListVisible(!playListVisible);
               }}
               startIcon={<FeaturedPlayList />}
-            >
-              Play List
-            </Button>
-          </Grid>
-        </Grid>
-        {/* 播放列表的内容 */}
-        <Grid container alignItems={"flex-start"}>
-          <Grid item border={"ActiveBorder"} width={"100%"}>
-            {playListVisible &&
-              playListContent.map((item: GetPlayListRespContent) => (
-                <List
-                  key={item.title}
-                  onClick={() => {
-                    setPlayingSongTitle(item.title);
-                    setPlayingSongSrc(item.source);
-                  }}
-                >
-                  <ListItem>
-                    <Grid container>
-                      <Grid item margin={"5px 8px 8px 5px"}>
-                        {item.author}
-                      </Grid>
-                      <Grid item margin={"5px 8px 8px 5px"}>
-                        {item.title}
-                      </Grid>
-                      <Grid item margin={"5px 8px 8px 5px"}>
-                        <Link href={item.source}>{item.source}</Link>
-                      </Grid>
-                    </Grid>
-                  </ListItem>
-                  <Divider />
-                </List>
-              ))}
+            />
           </Grid>
         </Grid>
       </Grid>
-    </div>
+
+      {/* 播放列表的内容 */}
+      <Grid container maxHeight={"300px"} overflow={"auto"}>
+        <Grid item border={"ActiveBorder"} width={"100%"}>
+          {playListVisible &&
+            playListContent.map((item: GetPlayListRespContent) => (
+              <List
+                sx={{ "overflow": "auto", "maxHeight": "50%" }}
+                key={item.title}
+                onClick={() => {
+                  setPlayingSongTitle(item.title);
+                  setPlayingSongSrc(item.source);
+                  setIsPlaying(true);
+                }}
+              >
+                <ListItem>
+                  <Grid container>
+                    <Grid item margin={"5px 8px 8px 5px"}>
+                      {item.author}
+                    </Grid>
+                    <Grid item margin={"5px 8px 8px 5px"}>
+                      {item.title}
+                    </Grid>
+                    <Grid item margin={"5px 8px 8px 5px"}>
+                      <div >{item.source}</div>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+              </List>
+            ))}
+        </Grid>
+      </Grid>
+    </div >
   );
 }
